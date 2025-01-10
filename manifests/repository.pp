@@ -14,7 +14,10 @@ class pulpcore::repository (
         'name'        => $repo_name,
         'description' => $repo_data['description'],
       },
-      auth_token => $auth_token,
+      auth_token => $auth_token ? {
+        ''      => "${api_username}:${api_password}",
+        default => undef,
+      },
       api_url    => "${api_url}/repositories/rpm/rpm/",
     }
 
@@ -28,7 +31,10 @@ class pulpcore::repository (
         'policy' => $repo_data.get('policy', 'immediate'),
         'proxy_url' => $repo_data.get('proxy_url', undef),
       },
-      auth_token => $auth_token,
+      auth_token => $auth_token ? {
+        ''      => "${api_username}:${api_password}",
+        default => undef,
+      },
       api_url    => "${api_url}/remotes/rpm/rpm/",
       require    => Pulp_resource["repository-${repo_name}"],
     }
@@ -40,7 +46,10 @@ class pulpcore::repository (
       content    => {
         'repository' => $repo_name,
       },
-      auth_token => $auth_token,
+      auth_token => $auth_token ? {
+        ''      => "${api_username}:${api_password}",
+        default => undef,
+      },
       api_url    => "${api_url}/publications/rpm/rpm/",
       require    => Pulp_resource["remote-${repo_name}"],
     }
@@ -53,7 +62,10 @@ class pulpcore::repository (
         'base_path'   => $repo_data['base_path'],
         'publication' => lookup_pulp_href("publication-${repo_name}", $auth_token, "${api_url}/publications/rpm/rpm/"),
       },
-      auth_token => $auth_token,
+      auth_token => $auth_token ? {
+        ''      => "${api_username}:${api_password}",
+        default => undef,
+      },
       api_url    => "${api_url}/distributions/rpm/rpm/",
       require    => Pulp_resource["publication-${repo_name}"],
     }
