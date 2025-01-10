@@ -3,7 +3,7 @@ class pulpcore::repository (
   String $auth_token = lookup('pulpcore::auth_token', { default_value => '' }),
   String $api_username = lookup('pulpcore::api_username', { default_value => 'admin' }),
   String $api_password = lookup('pulpcore::api_password', { default_value => 'admin' }),
-  String $api_url    = lookup('pulpcore::api_url', { default_value => "http://${hostname}:{${exposed_port}" }),
+  String $api_url    = lookup('pulpcore::api_url', { default_value => "http://${hostname}:${exposed_port}" }),
 ) {
   $repositories.each |$repo_name, $repo_data| {
     $repo_type = $repo_data.get('repo_type', 'rpm')
@@ -41,6 +41,7 @@ class pulpcore::repository (
       default      => fail("Unsupported repo_type '${repo_type}' for repository '${repo_name}'"),
     }
 
+    # Repository resource
     pulp_resource { "repository-${repo_name}":
       ensure     => present,
       category   => 'repository',
@@ -52,9 +53,10 @@ class pulpcore::repository (
         ''      => "${api_username}:${api_password}",
         default => undef,
       },
-      api_url    => "${api_url}/repositories/rpm/rpm/",
+      api_url    => "${api_url}/${repo_base_path}/",
     }
 
+    # Remote resource
     pulp_resource { "remote-${repo_name}":
       ensure     => present,
       category   => 'remote',
@@ -68,10 +70,11 @@ class pulpcore::repository (
         ''      => "${api_username}:${api_password}",
         default => undef,
       },
-      api_url    => "${api_url}/remotes/rpm/rpm/",
+      api_url    => "${api_url}/${remote_base_path}/",
       require    => Pulp_resource["repository-${repo_name}"],
     }
 
+    # Publication resource
     pulp_resource { "publication-${repo_name}":
       ensure     => present,
       category   => 'publication',
@@ -82,23 +85,40 @@ class pulpcore::repository (
         ''      => "${api_username}:${api_password}",
         default => undef,
       },
-      api_url    => "${api_url}/publications/rpm/rpm/",
+      api_url    => "${api_url}/${publication_base_path}/",
       require    => Pulp_resource["remote-${repo_name}"],
     }
 
+    # Distribution resource
     pulp_resource { "distribution-${repo_name}":
       ensure     => present,
       category   => 'distribution',
       content    => {
         'base_path'   => $repo_data['base_path'],
-        'publication' => lookup_pulp_href("publication-${repo_name}", $auth_token, "${api_url}/publications/rpm/rpm/"),
+        'publication' => lookup_pulp_href("publication-${repo_name}", $auth_token, "${api_url}/${publication_base_path}/"),
       },
       auth_token => $auth_token ? {
         ''      => "${api_username}:${api_password}",
         default => undef,
       },
-      api_url    => "${api_url}/distributions/rpm/rpm/",
+      api_url    => "${api_url}/${distribution_base_path}/",
       require    => Pulp_resource["publication-${repo_name}"],
+    }
+
+    # Sync resource
+    pulp_resource { "sync-${repo_name}":
+      ensure     => present,
+      category   => 'sync',
+      content    => {
+        'repository' => $repo_name,
+        'remote'     => "remote-${repo_name}",
+      },
+      auth_token => $auth_token ? {
+        ''      => "${api_username}:${api_password}",
+        default => undef,
+      },
+      api_url    => "${api_url}/${repo_base_path}/sync/",
+      require    => Pulp_resource["distribution-${repo_name}"],
     }
   }
 }
