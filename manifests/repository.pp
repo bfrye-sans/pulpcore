@@ -6,7 +6,41 @@ class pulpcore::repository (
   String $api_url    = lookup('pulpcore::api_url', { default_value => "http://${hostname}:{${exposed_port}" }),
 ) {
   $repositories.each |$repo_name, $repo_data| {
-    # Step 1: Create or update the repository
+    $repo_type = $repo_data.get('repo_type', 'rpm')
+
+    # Determine API base path based on repo_type
+    $repo_base_path = case $repo_type {
+      'rpm'        => 'repositories/rpm/rpm',
+      'deb'        => 'repositories/deb/apt',
+      'gem'        => 'repositories/gem/gem',
+      'container'  => 'repositories/container/container',
+      default      => fail("Unsupported repo_type '${repo_type}' for repository '${repo_name}'"),
+    }
+
+    $remote_base_path = case $repo_type {
+      'rpm'        => 'remotes/rpm/rpm',
+      'deb'        => 'remotes/deb/apt',
+      'gem'        => 'remotes/gem/gem',
+      'container'  => 'remotes/container/container',
+      default      => fail("Unsupported repo_type '${repo_type}' for repository '${repo_name}'"),
+    }
+
+    $publication_base_path = case $repo_type {
+      'rpm'        => 'publications/rpm/rpm',
+      'deb'        => 'publications/deb/apt',
+      'gem'        => 'publications/gem/gem',
+      'container'  => 'publications/container/container',
+      default      => fail("Unsupported repo_type '${repo_type}' for repository '${repo_name}'"),
+    }
+
+    $distribution_base_path = case $repo_type {
+      'rpm'        => 'distributions/rpm/rpm',
+      'deb'        => 'distributions/deb/apt',
+      'gem'        => 'distributions/gem/gem',
+      'container'  => 'distributions/container/container',
+      default      => fail("Unsupported repo_type '${repo_type}' for repository '${repo_name}'"),
+    }
+
     pulp_resource { "repository-${repo_name}":
       ensure     => present,
       category   => 'repository',
@@ -21,7 +55,6 @@ class pulpcore::repository (
       api_url    => "${api_url}/repositories/rpm/rpm/",
     }
 
-    # Step 2: Create or update the remote
     pulp_resource { "remote-${repo_name}":
       ensure     => present,
       category   => 'remote',
@@ -39,7 +72,6 @@ class pulpcore::repository (
       require    => Pulp_resource["repository-${repo_name}"],
     }
 
-    # Step 3: Create or update the publication
     pulp_resource { "publication-${repo_name}":
       ensure     => present,
       category   => 'publication',
@@ -54,7 +86,6 @@ class pulpcore::repository (
       require    => Pulp_resource["remote-${repo_name}"],
     }
 
-    # Step 4: Create or update the distribution
     pulp_resource { "distribution-${repo_name}":
       ensure     => present,
       category   => 'distribution',
