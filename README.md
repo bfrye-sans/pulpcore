@@ -41,10 +41,3 @@ Pulpcore supports various content types, including:
 - [`puppetlabs/docker`](https://forge.puppet.com/puppetlabs/docker) (optional for containerized Pulpcore setups)
 
 ---
-
-## Installation
-
-Install this module using the Puppet Forge CLI:
-
-```bash
-puppet module install bfrye-sans-pulpcore
