@@ -1,117 +1,50 @@
-# pulpcore
+# Pulpcore Puppet Module
 
-Welcome to your new module. A short overview of the generated parts can be found
-in the [PDK documentation][1].
+[![Puppet Forge](https://img.shields.io/puppetforge/v/<module_name>.svg)](https://forge.puppet.com/<module_name>)
+[![Build Status](https://github.com/bfrye-sans/pulpcore/actions/workflows/ci.yml/badge.svg)](https://github.com/bfrye-sans/pulpcore)
 
-The README template below provides a starting point with details about what
-information to include in your README.
+## Overview
 
-## Table of Contents
+The `pulpcore` module allows you to deploy and manage [Pulpcore](https://pulpproject.org/), an advanced platform for managing repositories of software packages. This module automates the setup and lifecycle of repositories, remotes, publications, and distributions, enabling seamless content delivery and management.
 
-1. [Description](#description)
-1. [Setup - The basics of getting started with pulpcore](#setup)
-    * [What pulpcore affects](#what-pulpcore-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with pulpcore](#beginning-with-pulpcore)
-1. [Usage - Configuration options and additional functionality](#usage)
-1. [Limitations - OS compatibility, etc.](#limitations)
-1. [Development - Guide for contributing to the module](#development)
+Pulpcore supports various content types, including:
+- RPM packages
+- Debian packages
+- Container images
+- Python packages (PyPI)
+- Ruby gems
 
-## Description
+## Features
 
-Briefly tell users why they might want to use your module. Explain what your
-module does and what kind of problems users can solve with it.
+- **Repository Management**: Create, update, and delete repositories.
+- **Remote Configuration**: Define remote sources for syncing content.
+- **Content Synchronization**: Automate syncing between remotes and repositories.
+- **Publications & Distributions**: Publish repository content and expose it via HTTP/HTTPS.
+- **Dynamic Configuration**: Supports multiple content types (RPM, Debian, etc.) with Hiera integration.
+- **API-Driven Operations**: Leverages Pulpcore's REST API for precise resource management.
 
-This should be a fairly short description helps the user decide if your module
-is what they want.
+---
 
-## Setup
+## Requirements
 
-### What pulpcore affects **OPTIONAL**
+### Supported Platforms
+- **Operating Systems**:
+  - Red Hat Enterprise Linux (RHEL) 8/9
+  - Rocky Linux 8/9
 
-If it's obvious what your module touches, you can skip this section. For
-example, folks can probably figure out that your mysql_instance module affects
-their MySQL instances.
+### Puppet Compatibility
+- Puppet <= 8.0
 
-If there's more that they should know about, though, this is the place to
-mention:
+### Dependencies
+- [`puppetlabs/stdlib`](https://forge.puppet.com/puppetlabs/stdlib)
+- [`puppetlabs/firewall`](https://forge.puppet.com/puppetlabs/firewall)
+- [`puppetlabs/docker`](https://forge.puppet.com/puppetlabs/docker) (optional for containerized Pulpcore setups)
 
-* Files, packages, services, or operations that the module will alter, impact,
-  or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
+---
 
-### Setup Requirements **OPTIONAL**
+## Installation
 
-If your module requires anything extra before setting up (pluginsync enabled,
-another module, etc.), mention it here.
+Install this module using the Puppet Forge CLI:
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you might want to include an additional "Upgrading" section here.
-
-### Beginning with pulpcore
-
-The very basic steps needed for a user to get the module up and running. This
-can include setup steps, if necessary, or it can be an example of the most basic
-use of the module.
-
-## Usage
-
-Include usage examples for common use cases in the **Usage** section. Show your
-users how to use your module to solve problems, and be sure to include code
-examples. Include three to five examples of the most important or common tasks a
-user can accomplish with your module. Show users how to accomplish more complex
-tasks that involve different types, classes, and functions working in tandem.
-
-## Reference
-
-This section is deprecated. Instead, add reference information to your code as
-Puppet Strings comments, and then use Strings to generate a REFERENCE.md in your
-module. For details on how to add code comments and generate documentation with
-Strings, see the [Puppet Strings documentation][2] and [style guide][3].
-
-If you aren't ready to use Strings yet, manually create a REFERENCE.md in the
-root of your module directory and list out each of your module's classes,
-defined types, facts, functions, Puppet tasks, task plans, and resource types
-and providers, along with the parameters for each.
-
-For each element (class, defined type, function, and so on), list:
-
-* The data type, if applicable.
-* A description of what the element does.
-* Valid values, if the data type doesn't make it obvious.
-* Default value, if any.
-
-For example:
-
-```
-### `pet::cat`
-
-#### Parameters
-
-##### `meow`
-
-Enables vocalization in your cat. Valid options: 'string'.
-
-Default: 'medium-loud'.
-```
-
-## Limitations
-
-In the Limitations section, list any incompatibilities, known issues, or other
-warnings.
-
-## Development
-
-In the Development section, tell other users the ground rules for contributing
-to your project and how they should submit their work.
-
-## Release Notes/Contributors/Etc. **Optional**
-
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You can also add any additional sections you feel are
-necessary or important to include here. Please use the `##` header.
-
-[1]: https://puppet.com/docs/pdk/latest/pdk_generating_modules.html
-[2]: https://puppet.com/docs/puppet/latest/puppet_strings.html
-[3]: https://puppet.com/docs/puppet/latest/puppet_strings_style.html
+```bash
+puppet module install bfrye-sans-pulpcore
